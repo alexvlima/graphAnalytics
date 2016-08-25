@@ -7,7 +7,7 @@
 <html>
 
 <head>
-	<title>Hyperspace by HTML5 UP</title>
+	<title>Graph Analytics</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -22,10 +22,8 @@
 		.flex {
 			display: flex;
 			justify-content: center;
-		}
-		
-		line {
-			stroke: rgba(255, 255, 255, .3);
+			align-items: center;
+			height: 100vh;
 		}
 	</style>
 </head>
@@ -51,13 +49,9 @@
 
 		<!-- Intro -->
 		<section id="intro" class="wrapper style2 fullscreen fade-up">
-			<div class="flex">
-				<svg width="1280" height="720"></svg>
+			<div class="flex" id='web'>
 			</div>
 		</section>
-
-		<script src="https://d3js.org/d3.v4.min.js"></script>
-		<script src="./fill.js"></script>
 
 		<!--<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
@@ -238,6 +232,9 @@
 	<script src="assets/js/util.js"></script>
 	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 	<script src="assets/js/main.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="./fill.js"></script>
 </body>
 
 </html>
