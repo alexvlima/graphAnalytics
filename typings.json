@@ -1,0 +1,9 @@
+{
+  "globalDependencies": {
+    "async": "registry:dt/async#1.4.2+20160602152629",
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "faker": "registry:dt/faker#0.0.0+20160406111603",
+    "mongoose": "registry:dt/mongoose#3.8.5+20160629014609",
+    "node": "registry:dt/node#6.0.0+20160621231320"
+  }
+}
