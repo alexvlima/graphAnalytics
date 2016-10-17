@@ -1,5 +1,7 @@
 process.env.NODE_ENV = process.env.NODE_ENV || /* istanbul ignore next */ 'development'
 
+require('./config/mongoose')()
+
 const fs = require('fs')
 const {CERT, KEY, HTTP, HTTPS} = require('./config/config')
 const appRedirect = require('express')()

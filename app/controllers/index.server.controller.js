@@ -1,11 +1,12 @@
 const {readFileSync} = require('fs')
+const path = require('path')
 
 exports.notFound = function (req, res) {
 	res.status(404).end()
 }
 
 exports.render = function (req, res) {
-	res.sendFile('./public/index.html')
+	res.sendFile(path.join(__dirname, '../../public/index.html'))
 }
 
 exports.json = function (req, res) {

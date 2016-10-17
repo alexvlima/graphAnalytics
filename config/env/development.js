@@ -1,5 +1,5 @@
 module.exports = {
-	DB: 'mongodb://10.190.60.15/twitter',
+	DB: 'mongodb://127.0.0.1/twitter',
 	SECRET: 'developmentSessionSecret',
 	MID_URL: 'http://127.0.0.1:19635/',
 	CERT: './ssl/device.crt' || './ssl/sample/device.crt',
