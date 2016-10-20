@@ -1,37 +1,47 @@
 'use strict'
 
-const {until} = require('async')
-const Twitter = require('twitter')
+//Crawler pra twitter, 1 request p/ segundo
+// function crawl(userName, next) {
+// 	let page = 0
+// 	let cursor = -1
+// 	let followers = {}
 
-const client = new Twitter({
-	consumer_key: '',
-	consumer_secret: '',
-	access_token_key: '',
-	access_token_secret: ''
-})
+// 	console.log('Crawling ' + userName)
+// 	until(() => cursor == 0, (callback) => {
+// 		client.get('friends/list', { screen_name: userName, cursor: cursor }, function (err, obj, res) {
+// 			if (err)
+// 				return callback(err)
 
-let web = {
-	users: [],
-	links: []
-}
+// 			cursor = JSON.parse(res.body).next_cursor
 
-let cursor = -1
+// 			console.log(page)
+// 			page++
 
-until(() => cursor == 0, (callback) => {
-	client.get('friends/list', { screen_name: 'sousandrei', cursor: cursor }, function (err, obj, res) {
-		if (err)
-			return callback(err)
+// 			for (let u of obj.users)
+// 				followers[u.id] = u
 
-		cursor = JSON.parse(res.body).next_cursor
-		console.log(obj)
-		for (let u of obj.users)
-			web.users[u.id] = u
+// 			setTimeout(callback, 60000)
+// 		})
+// 	}, (err) => {
+// 		if (err)
+// 			return console.log(err)
 
-		callback()
-	})
-}, (err) => {
-	if (err)
-		console.log(err)
+// 		writeFileSync('./files/' + userName + '.json', JSON.stringify(followers, null, 4))
 
-	console.log(web)
-})
+// 		console.log('Crawled ' + userName)
+
+// 		eachSeries(followers, (f, callback) => {
+// 			try {
+// 				return statSync('./files/' + f.screen_name + '.json')
+// 			} catch (e) {
+// 				if (e.code === 'ENOENT')
+// 					setTimeout(() => crawl(f.screen_name, () => callback()), 60000)
+// 			}
+// 		}, () => {
+// 			next()
+// 		})
+
+// 	})
+// }
+
+// crawl('sousandrei', () => console.log('end'))

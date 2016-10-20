@@ -1,50 +1,26 @@
-// const {readFileSync} = require('fs')
-// const async = require('async')
+const {Twitter} = require('../lib/twitter.lib')
 
 module.exports = (server) => {
 	const io = require('socket.io')(server)
 
 	io.on('connection', function (socket) {
-		console.log(socket.id)
+		console.log('Connected: ' + socket.id)
+		socket.twitter = new Twitter()
 
-		socket.on('search', (data) => {
+		//A cada X segundos envidar a rede atualizada para o client
+		//Opcao de setar o tempo de construcao da rede
+
+
+		socket.on('startStream', (data) => {
 			console.log(data)
+			//TODO startar a stream aqui
+		})
+		
+		socket.on('stopStream', (data) => {
+			console.log(data)
+			//TODO stopar a stream aqui
 		})
 
 
 	})
 }
-
-// let data = JSON.parse(readFileSync('./public/m.json'))
-
-// async.series([
-// 	(callback) => {
-// 		async.each(data.nodes, (node, next) => {
-// 			setTimeout(() => {
-// 				socket.emit('node', node)
-// 				next()
-// 			}, 50 * data.nodes.indexOf(node))
-// 		}, function (err) {
-// 			if (err)
-// 				console.log(err)
-
-// 			callback()
-// 		})
-// 	},
-// 	(callback) => {
-// 		async.each(data.edges, (edge, next) => {
-// 			setTimeout(() => {
-// 				socket.emit('edge', edge)
-// 				next()
-// 			}, 50 * data.edges.indexOf(edge))
-// 		}, function (err) {
-// 			if (err)
-// 				console.log(err)
-
-// 			callback()
-// 		})
-// 	},
-// 	() => {
-// 		socket.emit('stabilize')
-// 	}
-// ])

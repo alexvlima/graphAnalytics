@@ -15,4 +15,5 @@ module.exports = () => {
 
 	// Load models
 	require('../app/models/user.server.model')
+	require('../app/models/tweet.server.model')
 }
