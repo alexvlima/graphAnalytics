@@ -5,4 +5,4 @@
 args = commandArgs(trailingOnly=TRUE)
 
 # printa um json de volta
-args[0]
+args[1]
