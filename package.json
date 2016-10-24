@@ -37,17 +37,20 @@
   },
   "devDependencies": {
     "apidoc": "^0.16.1",
+    "coveralls": "^2.11.14",
     "eslint": "^3.1.1",
     "faker": "^3.1.0",
     "istanbul": "^0.4.4",
     "jsdoc": "^3.4.0",
     "mocha": "^2.5.3",
+	"mocha-lcov-reporter": "^1.2.0",
     "supertest": "^1.2.0"
   },
   "scripts": {
     "apidoc": "apidoc -i app/ -o apidocs/",
     "pretest": "eslint app/ test/ config/ ./*.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec -b",
+    "testTravis": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "start": "node index.js"
   }
 }

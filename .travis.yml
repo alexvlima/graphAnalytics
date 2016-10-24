@@ -5,7 +5,7 @@ services:
 node_js:
   - "6"
 script: 
-  - npm run test
+  - npm run testTravis
 notifications:
   email: true
 after_success:
