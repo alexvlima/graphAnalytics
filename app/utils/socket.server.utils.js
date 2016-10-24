@@ -7,33 +7,35 @@ module.exports = (server) => {
 		console.log('Connected: ' + socket.id)
 		socket.twitter = new Twitter()
 
-		socket.twitter.on('newUser', (u) => {
-			socket.emit('newUser', u)
-		})
-
-		socket.twitter.on('newTweet', (t) => {
-			socket.emit('newTweet', t)
-		})
 
 		socket.on('disconnect', () => {
 			console.log('Disconnected: ' + socket.id)
 			socket.twitter.stopStream()
 		})
 
-		//A cada X segundos envidar a rede atualizada para o client
-		//Opcao de setar o tempo de construcao da rede
 		socket.on('startStream', (data) => {
 			console.log('Stream Started: ' + data.txt)
 			socket.twitter.startStream(data.txt)
-			//TODO startar a stream aqui
 		})
 
 		socket.on('stopStream', () => {
 			console.log('Stream Stopped')
 			socket.twitter.stopStream()
-			//TODO stopar a stream aqui
 		})
 
+		// Interfaces socket
+		// definir funcoes
+		// provisorio
+
+		//envia um usuario novo		
+		socket.twitter.on('newUser', (u) => {
+			socket.emit('newUser', u)
+		})
+
+		//envia um tweet novo		
+		socket.twitter.on('newTweet', (t) => {
+			socket.emit('newTweet', t)
+		})
 
 	})
 }

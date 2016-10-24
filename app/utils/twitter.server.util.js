@@ -1,5 +1,3 @@
-'use strict'
-
 //Crawler pra twitter, 1 request p/ segundo
 // function crawl(userName, next) {
 // 	let page = 0
