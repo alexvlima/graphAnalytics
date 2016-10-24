@@ -77,14 +77,72 @@
 
 	</main>
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.1.0/sigma.min.js"></script>
+
+	<script>
+		var s = new sigma('web')
+		
+		s.graph.addNode({
+			// Main attributes:
+			id: 0,
+			label: 'Tweets',
+			// Display attributes:
+			x: 0,
+			y: 0,
+			size: 1,
+			color: '#fff'
+		})
+
+		s.refresh()
+	</script>
+
 	<script>
 		let socket = io.connect('https://localhost')
-	
+		
+		let tweets = [{id: 0}]
+		let preTweets = []
+
+		//provisorio
+		setInterval(() => {
+			
+			while(preTweets.length > 0){
+				
+				if(preTweets.length == 0) break 
+
+				let t = preTweets.pop() 
+				tweets.push(t)
+
+				s.graph.addNode({
+					// Main attributes:
+					id: tweets.length,
+					label: t.text,
+					// Display attributes:
+					x: 3,
+					y: tweets.length,
+					size: 1,
+					color: '#fff'
+				})
+
+			}
+
+			s.refresh()
+
+		}, 3000)
+
+		socket.on('newUser', (u) => {
+			//console.log(u)
+		})
+
+		socket.on('newTweet', (t) => {
+			//console.log(t)
+			preTweets.push(t)
+		})
+
 		$('#search').keypress((event) => {
 			if (event.which == 13) {
 				event.preventDefault()
 				
-				socket.emit('search', { str: $('#search').val() })
+				socket.emit('startStream', { txt: $('#search').val() })
 				
 				$('#search').val(undefined)
 				$('#search').blur()

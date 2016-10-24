@@ -1,13 +1,16 @@
 'use strict'
 
+const EventEmitter = require('events')
 const {waterfall, eachSeries} = require('async')
 const twitter = require('twitter')
 
 const User = require('mongoose').model('User')
 const Tweet = require('mongoose').model('Tweet')
 
-exports.Twitter = class Twitter {
+exports.Twitter = class Twitter extends EventEmitter {
 	constructor() {
+		super()
+
 		this.queue = []
 
 		this.client = new twitter({
@@ -19,7 +22,9 @@ exports.Twitter = class Twitter {
 	}
 
 	stopStream() {
-		this.stream.destroy()
+		if (this.stream)
+			this.stream.destroy()
+		
 		delete this.client
 		clearInterval(this.interval)
 	}
@@ -97,6 +102,7 @@ exports.Twitter = class Twitter {
 				else
 					new User(u).save((e) => {
 						if (e) throw (e)
+						this.emit('newUser', u)
 						resolve()
 					})
 			})
@@ -115,6 +121,7 @@ exports.Twitter = class Twitter {
 				else
 					new Tweet(t).save((e) => {
 						if (e) throw (e)
+						this.emit('newTweet', t)
 						resolve()
 					})
 			})
