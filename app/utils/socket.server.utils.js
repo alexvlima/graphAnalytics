@@ -23,12 +23,13 @@ module.exports = (server) => {
 		//A cada X segundos envidar a rede atualizada para o client
 		//Opcao de setar o tempo de construcao da rede
 		socket.on('startStream', (data) => {
-			console.log(data)
+			console.log('Stream Started: ' + data.txt)
 			socket.twitter.startStream(data.txt)
 			//TODO startar a stream aqui
 		})
 
 		socket.on('stopStream', () => {
+			console.log('Stream Stopped')
 			socket.twitter.stopStream()
 			//TODO stopar a stream aqui
 		})
