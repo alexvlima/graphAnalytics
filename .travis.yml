@@ -8,5 +8,3 @@ script:
   - npm run testTravis
 notifications:
   email: true
-after_success:
-  - coveralls
