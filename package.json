@@ -21,6 +21,7 @@
   "dependencies": {
     "async": "^2.0.1",
     "body-parser": "^1.15.2",
+	"codacy-coverage": "^2.0.0",
     "compression": "^1.6.2",
     "connect-mongo": "^1.3.2",
     "cors": "^2.8.1",
@@ -51,6 +52,7 @@
     "pretest": "eslint app/ test/ config/ ./*.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec -b",
     "testTravis": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "testCodacy": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage && rm -rf ./coverage",
     "start": "node index.js"
   }
 }

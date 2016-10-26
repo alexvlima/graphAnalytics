@@ -6,5 +6,6 @@ node_js:
   - "6"
 script: 
   - npm run testTravis
+  - npm run testCodacy
 notifications:
   email: true
