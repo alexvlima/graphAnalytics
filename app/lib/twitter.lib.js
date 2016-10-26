@@ -1,6 +1,7 @@
 'use strict'
 
 const EventEmitter = require('events')
+const {CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET} = require('../../config/config')
 const {waterfall, eachSeries} = require('async')
 const twitter = require('twitter')
 
@@ -14,17 +15,17 @@ exports.Twitter = class Twitter extends EventEmitter {
 		this.queue = []
 
 		this.client = new twitter({
-			consumer_key: '',
-			consumer_secret: '',
-			access_token_key: '',
-			access_token_secret: ''
+			consumer_key: CONSUMER_KEY,
+			consumer_secret: CONSUMER_SECRET,
+			access_token_key: ACCESS_TOKEN_KEY,
+			access_token_secret: ACCESS_TOKEN_SECRET
 		})
 	}
 
 	stopStream() {
 		if (this.stream)
 			this.stream.destroy()
-		
+
 		delete this.client
 		clearInterval(this.interval)
 	}

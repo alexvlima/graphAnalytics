@@ -19,6 +19,7 @@ const Tweet = new Schema({
 	lang: String,
 	timestamp_ms: String,
 
+	retweeted_status: String,
 	retweet_count: String,
 	favorite_count: String,
 
