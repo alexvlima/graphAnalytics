@@ -1,5 +1,5 @@
 
-#Faz o maching entre o filtro e pessoas que escreveram alguma coisa
+#Matching JSON TWITTER: relação user words
 #Exemplo abaixo está sendo quebrado por palavras
 # Dependência SparkR
 
@@ -60,5 +60,9 @@ for (twt in output) {
    i <- i + 1
 }
 
+#head(bagwd.df,4)
 
-head(bagwd.df,4)
+#usuarios únicos da lista de palavras
+s <- unique(unlist(strsplit(bagwd.df$usrs, split = " "), use.names = FALSE))
+s[!is.na(s)]
+
