@@ -10,16 +10,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 	<!-- Compiled and minified CSS -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+	<link rel="stylesheet" href="materialize.min.css">
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="jquery.min.js"></script>
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+	<link rel="stylesheet" href="vis.min.css">
+	<script src="vis.min.js"></script>
 
 
 	<!-- Compiled and minified JavaScript -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+	<script src="materialize.min.js"></script>
 
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -55,11 +55,11 @@
 
 	<nav class="indigo">
 		<div class="nav-wrapper">
-			<form>
+			<form autocomplete="off">
 				<div class="input-field">
 					<input id="search" type="search" required>
-					<label for="search"><i class="material-icons">search</i></label>
-					<i class="material-icons">close</i>
+					<!--<label for="search"><i class="material-icons">search</i></label>-->
+					<i class="material-icons">X</i>
 				</div>
 			</form>
 		</div>
@@ -73,7 +73,7 @@
 
 	<div class="fixed-action-btn vertical hover-to-toggle" style="bottom: 45px; right: 24px;">
 		<a class="btn-floating btn-large indigo">
-			<i class="material-icons">menu</i>
+			<i class="material-icons">+</i>
 		</a>
 		<ul>
 			<li>
@@ -115,7 +115,11 @@
 		edges = new vis.DataSet([])
 
 		var container = document.getElementById('web')
-		var options = {}
+		var options = {
+			nodes: {
+				shape: 'box'
+			}
+		}
 		var network = new vis.Network(container, {nodes, edges}, options)
 
 	</script>
