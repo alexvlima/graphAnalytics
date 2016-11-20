@@ -36,136 +36,211 @@
 #	]
 #}
 
+if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE)
+if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE)
+if(!require(randomNames)) install.packages('randomNames',dependencies=TRUE)
+#if(!require(mongolite)) install.packages('mongolite',dependencies=TRUE)
+    
+#http://ec2-52-67-202-64.sa-east-1.compute.amazonaws.com:1234/collection/Local/twitter/tweets/export/true
+#http://ec2-52-67-202-64.sa-east-1.compute.amazonaws.com:1234/collection/Local/twitter/users/export/true
 
+library(RCurl)
 library(jsonlite)
 library(randomNames)
-library(SparkR)
 
 
-setLinkData<-function(strId, word, colName = c("from","to","word")) {
-
+pivotText <- function(userId, text, minWord = 4, colName = c("user","word")) {
+    
     tryCatch({
+        text <- tolower(text)
+        spltText <- strsplit(text, " ")[[1]]
+
+        bagw.expd <- expand.grid(c(userId),spltText)
+        colnames(bagw.expd) <- colName
+        bagw.expd <- bagw.expd[!(nchar(as.character(bagw.expd$word)) < minWord),]
+        #rownames(bagw.expd) <- seq(length=nrow(bagw.expd))
+        rownames(bagw.expd) <- NULL
+        return(bagw.expd)
         
-      #  strId <- stri_enc_toutf8(strId)
-        ids <- unique(strsplit(as.character(strId), " ")[[1]])
-        idsLen <- length(ids)
-        linkedData <- NULL
-    
-        for(i in 1:idsLen){
-           
-           jLen <- (idsLen - (i+1)) + 1
-           
-           if(jLen > 0) {
-               subIds <- vector(,jLen)
-               p <- i + 1 
-               
-                for(j in 1:jLen) {
-                    subIds[j] <- as.character(ids[p])
-                    p <- p + 1
-                }
-                subLen <- length(subIds)
-        
-                for(k in 1:subLen) {
-                    #linkedData <- rbind(linkedData, data.frame(ids[i],subIds[k], word))
-                     linkedData <- rbind(linkedData, data.frame(as.character(ids[i]),as.character(subIds[k]), word))
-                }
-           }
-        
-        }
-    
-        colnames(linkedData) <- colName
-    
-        return(linkedData)
     }, error=function(e){ 
         #print(i) 
         #print(e) 
-    
     })
 }
 
+concatWord <- function(bagwDF, minOccur=0) {
+    tryCatch({
+        
+        concatDF <- aggregate(bagwDF$user,bagwDF['word'],paste,collapse=',')
+        colnames(concatDF) <- c("word", "user")
+        #caso tenha mais de minOccur iteracoes da palavra
+        concatDF <- concatDF[countCharOccurrences(',', concatDF$user) > minOccur, ]
+        rownames(concatDF) <- NULL
+        return(concatDF)
+        
+    }, error=function(e){ 
+        #print(i) 
+        #print(e) 
+    })
+}
 
-# Recebe json
-json = readLines(file('stdin', 'r'), n=1)
-#json <- "/var/www/html/int.txt"
-raw.data <- readLines(json, warn = "F")
-rd <- fromJSON(raw.data)
+countCharOccurrences <- function(char, s) {
+    s2 <- gsub(char,"",s)
+    return (nchar(s) - nchar(s2))
+}
+
+
+permuteUser <- function(userArr, twoWay = TRUE, colName = c("from","to")) {
+    
+    lnkdUser <- NULL
+    
+    if(twoWay) {
+        lnkdUser <- expand.grid(userArr,userArr)
+        colnames(lnkdUser) <- colName
+        lnkdUser <- lnkdUser[which(lnkdUser$from != lnkdUser$to),]
+        row.names(lnkdUser) <- NULL           
+    } else {
+            
+        lnkdUser <- combn(userArr, 2, simplify=FALSE) 
+    }
+    
+    return (lnkdUser)
+}
+
+permutations <- function(n){
+    if(n==1){
+        return(matrix(1))
+    } else {
+        sp <- permutations(n-1)
+        p <- nrow(sp)
+        A <- matrix(nrow=n*p,ncol=n)
+        for(i in 1:n){
+            A[(i-1)*p+1:p,] <- cbind(i,sp+(sp>=i))
+        }
+        return(A)
+    }
+}
+
+
+
+URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
+rawJson <- getURLContent(URL)
+#rawJson = readLines(file('stdin', 'r'), n=1)
+rd <- fromJSON(rawJson)
 bagw <- data.frame(rd$text,rd$user)
 colnames(bagw) <- c("text","user")
 
-bagwd <- SparkR:::createDataFrame(sqlContext, bagw)
-bagwd.rdd <- SparkR:::toRDD(bagwd)
+
+#head(bagw)
+bagwLen <- nrow(bagw)
+#bagwLen
+#uniqueUser <- unlist(unique(bagw$user))
+
+#s <- s[!is.na(s)]
+
+#pangram <- tolower("A Broadway musical musical that doesn't even let white people audition lectures someone on intolerance! This is why Trump w… https://t.co/0ewgl7QZJ1")
 
 
-#SparkR RDD
 
-words <-  SparkR:::flatMap(bagwd.rdd,
-      function(str) {
-        paste(unique(strsplit(as.character(str[1]), " ")[[1]]),str[[2]],sep=".SPL.")
-})
-                 
-wordCount <- SparkR:::lapply(words, function(word) { 
-    wordPlit <- strsplit(as.character(word), ".SPL.")[[1]]
+bgwDF <- NULL
 
-    list(wordPlit[[1]],wordPlit[[2]])
+for (i in 1:bagwLen){
+    
+    userId <- as.character(bagw$user[i])
+    pangram <- tolower(as.character(bagw$text[i]))
+    pangram <- gsub("[[:punct:]]", " ", pangram)
+    
+    #pvText <- pivotText("27434900",pangram, 6)
+    pvText <- pivotText(userId,pangram, 6)
+    pvText$qtd <- 1
+    
+    #print(head(pvText))
+    
+    if(i == 1) {
+        bgwDF <- pvText
+    } else {        
+        bgwDF <- rbind(bgwDF,pvText)
+    }
+}
+#nrow(bgwDF)
+#head(bgwDF, 12)
+
+
+#aggregate(bgwDF$word,bgwDF['qtd'],sum)
+#aggregate(qtd~word, sum, data=bgwDF)
+#aggregate( as.matrix(bgwDF[,3]), as.list(bgwDF[,1:2]), FUN = sum)
+
+
+## remove a mesma palavra mencionada pela mesma pessoas
+bgwDF <- aggregate( as.matrix(bgwDF[,3]), as.list(bgwDF[,1:2]), FUN = sum)
+
+bgwDF.concat <- concatWord(bgwDF,4)
+len <- nrow(bgwDF.concat)
+#head(bgwDF.concat, 50)
+
+## CRIA ARQUIVO DE SAIDA
+
+logFile = "/var/www/outfile/log_file.js"
+cat("", file=logFile, append=FALSE, sep = "")
+
+
+## CRIA OS NODES DO ARQUIVO JSON graphi
+
+#ukUsr <- unique(unlist(strsplit(bgwDF.concat$user, split = ","), use.names = FALSE))
+ukUsr <- unique(unlist(unique(strsplit(bgwDF.concat$user, split = ","), use.names = FALSE)))
+ukUsr <- ukUsr[!is.na(ukUsr)]
+ukUsrLen <- length(ukUsr)
+randName <- randomNames(ukUsrLen, name.order = "first.last", name.sep = " ")
+
+
+nodeDF <- data.frame(ukUsr,randName)
+colnames(nodeDF) <- c("id","label")
+ukUsr <- NULL
+
+
+cat('var nodes = [', file=logFile, append=TRUE, sep = "\n")
+
+nodeJson <- toJSON(nodeDF, pretty = FALSE)
+nodeJson <- gsub("^\\[", "", nodeJson)
+nodeJson <- gsub("\\]$", "", nodeJson)
+
+cat(nodeJson, file=logFile, append=TRUE, sep = "\n")
+
+cat('];', file=logFile, append=TRUE, sep = "\n")
+
+
+
+# cria os edges do visio JSON graphi
+#bgwDF.concat
+len <- nrow(bgwDF.concat)
+
+edgeStr <- NULL
+
+cat('var edges = [', file=logFile, append=TRUE, sep = "\n")
+
+
+for (i in 1:len){
+    
+    usrWord <- as.character(bgwDF.concat[i,1])
+    usrArr <- strsplit(bgwDF.concat[i,2], ",")[[1]]
+    usrPermute <- (permuteUser(usrArr, TRUE))
+   
   
-})
+   # usrPermute$label <- usrWord 
+     
+    edgeJson <- toJSON(usrPermute, pretty = FALSE)
+    edgeJson <- gsub("^\\[", "", edgeJson)
+    edgeJson <- gsub("\\]$", "", edgeJson)
+    
+    cat(edgeJson, file=logFile, append=TRUE, sep = "")
+    
+    if(i < len ) {
+        cat(",", file=logFile, append=TRUE, sep = "\n")
+    } 
 
-counts <- SparkR:::reduceByKey(wordCount, "paste", numPartitions=2)	  
-
-commonRDD <- SparkR:::filterRDD(counts, function (str) { 
-    length(strsplit(as.character(str[2]), " ")[[1]]) > 1 & nchar(str[1]) > 1 & str[1] != 'RT'
-})
-
-
-output <- collect(commonRDD)
-outputLen <- length(commonRDD)
-
-#nodes and edges
-
-bagwd.df <- data.frame(matrix(, nrow=outputLen, ncol=2))
-colnames(bagwd.df) <- c("word","usrs")
-
-lnkData <- NULL
-nodeData <- NULL
-
-i<-0
-
-for (twt in output) {
-	wdStr <- twt[[1]]
-	wdUsr <- twt[[2]]
-
-	bagwd.df$word[i] <- wdStr
-	bagwd.df$usrs[i] <- wdUsr
-
-	lnkd <- setLinkData(wdUsr, wdStr)
-	lnkData$edges <- rbind(lnkData$edges, lnkd)
-
-	i <- i + 1
 }
 
+cat('\n];', file=logFile, append=TRUE, sep = "\n")
 
-## usuarios unicos
-s <- unique(unlist(strsplit(bagwd.df$usrs, split = " "), use.names = FALSE))
-s <- s[!is.na(s)]
-
-
-sLen <- length(s)
-#nomde de pessoas aleatorias
-rName <- unique(randomNames(sLen*3.5, name.order = "first.last", name.sep = " "))
-
-
-
-
-for (i in 1:sLen){
-   nodeData$nodes <- rbind(nodeData$nodes, data.frame(s[i],rName[i]))
-}
-
-colnames(nodeData$nodes) <- c("id","label")
-colnames(lnkData$edges) <- c("from","to","word")
-
-
-#converte para json pretty deixado como false para lembrar que existe
-gphJson <- toJSON(c(nodeData,lnkData), pretty = FALSE)
-
-#retorna o json
-write(gphJson, "/var/www/html/rfiles/word-relation.json")
+# faz o output do arquivo, dependendo ter de colocar print
+readChar(logFile, file.info(logFile)$size)
