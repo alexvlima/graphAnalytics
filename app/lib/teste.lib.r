@@ -121,8 +121,7 @@ permutations <- function(n){
     }
 }
 
-
-
+## retorn JSON de API adminMongo stdin comentado
 URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
 rawJson <- getURLContent(URL)
 #rawJson = readLines(file('stdin', 'r'), n=1)
@@ -134,13 +133,6 @@ colnames(bagw) <- c("text","user")
 #head(bagw)
 bagwLen <- nrow(bagw)
 #bagwLen
-#uniqueUser <- unlist(unique(bagw$user))
-
-#s <- s[!is.na(s)]
-
-#pangram <- tolower("A Broadway musical musical that doesn't even let white people audition lectures someone on intolerance! This is why Trump w… https://t.co/0ewgl7QZJ1")
-
-
 
 bgwDF <- NULL
 
@@ -165,12 +157,6 @@ for (i in 1:bagwLen){
 #nrow(bgwDF)
 #head(bgwDF, 12)
 
-
-#aggregate(bgwDF$word,bgwDF['qtd'],sum)
-#aggregate(qtd~word, sum, data=bgwDF)
-#aggregate( as.matrix(bgwDF[,3]), as.list(bgwDF[,1:2]), FUN = sum)
-
-
 ## remove a mesma palavra mencionada pela mesma pessoas
 bgwDF <- aggregate( as.matrix(bgwDF[,3]), as.list(bgwDF[,1:2]), FUN = sum)
 
@@ -180,13 +166,14 @@ len <- nrow(bgwDF.concat)
 
 ## CRIA ARQUIVO DE SAIDA
 
-logFile = "/var/www/outfile/log_file.js"
+logFile <- tempfile()
+#print(logFile)
+##logFile = "/var/www/outfile/log_file.js"
 cat("", file=logFile, append=FALSE, sep = "")
 
 
-## CRIA OS NODES DO ARQUIVO JSON graphi
-
-#ukUsr <- unique(unlist(strsplit(bgwDF.concat$user, split = ","), use.names = FALSE))
+## CRIA OS NODES DO ARQUIVO JS visjs
+    
 ukUsr <- unique(unlist(unique(strsplit(bgwDF.concat$user, split = ","), use.names = FALSE)))
 ukUsr <- ukUsr[!is.na(ukUsr)]
 ukUsrLen <- length(ukUsr)
@@ -208,9 +195,6 @@ cat(nodeJson, file=logFile, append=TRUE, sep = "\n")
 
 cat('];', file=logFile, append=TRUE, sep = "\n")
 
-
-
-# cria os edges do visio JSON graphi
 #bgwDF.concat
 len <- nrow(bgwDF.concat)
 
@@ -243,4 +227,7 @@ for (i in 1:len){
 cat('\n];', file=logFile, append=TRUE, sep = "\n")
 
 # faz o output do arquivo, dependendo ter de colocar print
-readChar(logFile, file.info(logFile)$size)
+print(readChar(logFile, file.info(logFile)$size))
+
+#por enquanto unlink esta comentado para testes
+#unlink(logFile, recursive=TRUE)
