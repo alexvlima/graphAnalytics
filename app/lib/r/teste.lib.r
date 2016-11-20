@@ -169,6 +169,7 @@ len <- nrow(bgwDF.concat)
 logFile <- tempfile()
 #print(logFile)
 ##logFile = "/var/www/outfile/log_file.js"
+
 cat("", file=logFile, append=FALSE, sep = "")
 
 
@@ -184,8 +185,10 @@ nodeDF <- data.frame(ukUsr,randName)
 colnames(nodeDF) <- c("id","label")
 ukUsr <- NULL
 
-
-cat('var nodes = [', file=logFile, append=TRUE, sep = "\n")
+cat('{', file=logFile, append=TRUE, sep = "\n")
+cat('"nodes": [', file=logFile, append=TRUE, sep = "\n")
+##output como JS
+##cat('var nodes = [', file=logFile, append=TRUE, sep = "\n")
 
 nodeJson <- toJSON(nodeDF, pretty = FALSE)
 nodeJson <- gsub("^\\[", "", nodeJson)
@@ -193,14 +196,20 @@ nodeJson <- gsub("\\]$", "", nodeJson)
 
 cat(nodeJson, file=logFile, append=TRUE, sep = "\n")
 
-cat('];', file=logFile, append=TRUE, sep = "\n")
+cat(']', file=logFile, append=TRUE, sep = "\n")
+cat(',', file=logFile, append=TRUE, sep = "\n")
+
+##output como JS
+##cat('];', file=logFile, append=TRUE, sep = "\n")
 
 #bgwDF.concat
 len <- nrow(bgwDF.concat)
 
 edgeStr <- NULL
 
-cat('var edges = [', file=logFile, append=TRUE, sep = "\n")
+cat('"edges": [', file=logFile, append=TRUE, sep = "\n")    
+##output como JS
+##cat('var edges = [', file=logFile, append=TRUE, sep = "\n")
 
 
 for (i in 1:len){
@@ -222,8 +231,10 @@ for (i in 1:len){
     } 
 
 }
-
-cat('\n];', file=logFile, append=TRUE, sep = "\n")
+cat('\n]', file=logFile, append=TRUE, sep = "\n")
+cat('}', file=logFile, append=TRUE, sep = "\n")
+##output como JS
+##cat('\n];', file=logFile, append=TRUE, sep = "\n")
 
 # faz o output do arquivo, dependendo ter de colocar print
 strOut <- readChar(logFile, file.info(logFile)$size)
