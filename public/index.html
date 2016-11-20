@@ -103,13 +103,6 @@
 	<div class="graph" id='web'></div>
 
 	<script>
-		$('#cancel').click(() => {
-			$('#chip').html('none')
-			socket.emit('stopStream')
-		})
-	</script>
-
-	<script>
 
 		nodes = new vis.DataSet([])
 		edges = new vis.DataSet([])
@@ -122,36 +115,19 @@
 		}
 		var network = new vis.Network(container, {nodes, edges}, options)
 
-	</script>
-
-	<script>
 		let socket = io.connect('https://localhost')
 		
-		let tweets = [{id: 0}]
-		let preTweets = []
-
-		//provisorio
-		setInterval(() => {
-			
-			while(preTweets.length > 0){
-				
-				if(preTweets.length == 0) break 
-
-				let t = preTweets.pop() 
-				tweets.push(t)
-
-				nodes.add({id: t.id, label: t.text, shape: 'box'})
-			}
-
-		}, 3000)
-
-		socket.on('newUser', (u) => {
-			//console.log(u)
+		socket.on('graph', (g) => {
+			console.log(g)
 		})
 
-		socket.on('newTweet', (t) => {
-			//console.log(t)
-			preTweets.push(t)
+
+
+
+		// Start e Stop stream
+		$('#cancel').click(() => {
+			$('#chip').html('none')
+			socket.emit('stopStream')
 		})
 
 		$('#search').keypress((event) => {
