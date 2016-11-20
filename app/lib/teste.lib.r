@@ -36,10 +36,10 @@
 #	]
 #}
 
-if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE)
-if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE)
-if(!require(randomNames)) install.packages('randomNames',dependencies=TRUE)
-#if(!require(mongolite)) install.packages('mongolite',dependencies=TRUE)
+if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(randomNames)) install.packages('randomNames',dependencies=TRUE, repos="http://cran.rstudio.com/")
+#if(!require(mongolite)) install.packages('mongolite',dependencies=TRUE, repos="http://cran.rstudio.com/")
     
 #http://ec2-52-67-202-64.sa-east-1.compute.amazonaws.com:1234/collection/Local/twitter/tweets/export/true
 #http://ec2-52-67-202-64.sa-east-1.compute.amazonaws.com:1234/collection/Local/twitter/users/export/true
