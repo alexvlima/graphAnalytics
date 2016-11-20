@@ -209,7 +209,6 @@ for (i in 1:len){
     usrArr <- strsplit(bgwDF.concat[i,2], ",")[[1]]
     usrPermute <- (permuteUser(usrArr, TRUE))
    
-  
    # usrPermute$label <- usrWord 
      
     edgeJson <- toJSON(usrPermute, pretty = FALSE)
@@ -227,7 +226,7 @@ for (i in 1:len){
 cat('\n];', file=logFile, append=TRUE, sep = "\n")
 
 # faz o output do arquivo, dependendo ter de colocar print
-print(readChar(logFile, file.info(logFile)$size))
-
-#por enquanto unlink esta comentado para testes
-#unlink(logFile, recursive=TRUE)
+strOut <- readChar(logFile, file.info(logFile)$size)
+#remover arquivo temporario
+unlink(logFile, recursive=TRUE)
+write(strOut, stdout())
