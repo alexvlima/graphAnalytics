@@ -278,20 +278,24 @@ for (i in 1:len){
     
     usrWord <- as.character(bgwDF.concat[i,1])
     usrArr <- strsplit(bgwDF.concat[i,2], ",")[[1]]
-    usrPermute <- (permuteUser(usrArr, TRUE))
+    p <- i + 1
+    
+    if(grepl(",", bgwDF.concat[i,2])) {
+	usrPermute <- (permuteUser(usrArr, TRUE))
 
-    if(showLabel) {
-    	usrPermute$label <- usrWord 
+    	if(showLabel) {
+    		usrPermute$label <- usrWord 
+    	}
+    	edgeJson <- toJSON(usrPermute, pretty = FALSE)
+    	edgeJson <- gsub("^\\[", "", edgeJson)
+    	edgeJson <- gsub("\\]$", "", edgeJson)
+    
+    	cat(edgeJson, file=logFile, append=TRUE, sep = "")
+    
+    	if(i < len & grepl(",", bgwDF.concat[p,2]) ) {
+        	cat(",", file=logFile, append=TRUE, sep = "\n")
+    	}
     }
-    edgeJson <- toJSON(usrPermute, pretty = FALSE)
-    edgeJson <- gsub("^\\[", "", edgeJson)
-    edgeJson <- gsub("\\]$", "", edgeJson)
-    
-    cat(edgeJson, file=logFile, append=TRUE, sep = "")
-    
-    if(i < len ) {
-        cat(",", file=logFile, append=TRUE, sep = "\n")
-    } 
 }
 
 cat('\n]', file=logFile, append=TRUE, sep = "\n")
