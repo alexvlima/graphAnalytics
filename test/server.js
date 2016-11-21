@@ -75,7 +75,7 @@ describe('servidor', () => {
 
 		})
 
-		it('home', function (done) {
+		it('page', function (done) {
 			Supertest(App)
 				.get('/')
 				.expect(200)

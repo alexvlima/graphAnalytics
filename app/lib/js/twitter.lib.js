@@ -15,6 +15,7 @@ const client = new twitter({
 	access_token_secret: ACCESS_TOKEN_SECRET
 })
 
+/* istanbul ignore next */
 exports.Twitter = class Twitter extends EventEmitter {
 	constructor() {
 		super()

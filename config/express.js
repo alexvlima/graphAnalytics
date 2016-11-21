@@ -35,7 +35,9 @@ module.exports = () => {
 
 	app.use(require('method-override')())
 
-	app.use('/', express.static(require('path').normalize(__dirname + '/../public/')))
+	app.use('/js', express.static(require('path').normalize(__dirname + '/../public/js')))
+	app.use('/css', express.static(require('path').normalize(__dirname + '/../public/css')))
+	app.use('/fonts', express.static(require('path').normalize(__dirname + '/../public/fonts')))
 
 	app.use(process.session)
 

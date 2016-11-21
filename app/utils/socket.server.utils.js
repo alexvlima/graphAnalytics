@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const Tweet = mongoose.model('Tweet')
 
+/* istanbul ignore next */
 module.exports = (server) => {
 	const io = require('socket.io')(server)
 
@@ -45,6 +46,7 @@ module.exports = (server) => {
 	})
 }
 
+/* istanbul ignore next */
 function rLoop() {
 	return parallel({
 		tweets: (callback) => {
