@@ -36,9 +36,9 @@
 #	]
 #}
 
-if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
-if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
-if(!require(randomNames)) install.packages('randomNames',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(RCurl,quietly = TRUE)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(jsonlite,quietly = TRUE)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(randomNames,quietly = TRUE)) install.packages('randomNames',dependencies=TRUE, repos="http://cran.rstudio.com/")
    
 #http://localhost:1234/collection/Local/twitter/tweets/export/true
 #http://localhost:1234/collection/Local/twitter/users/export/true
