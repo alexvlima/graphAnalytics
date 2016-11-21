@@ -1,4 +1,3 @@
-
 ## Filtra twittes por palavras. Caso exista mais de uma separar por virgula
 ## Apresenta como size no node a quantidade de retweets
 ## Relacao dos edges e por tweet e word
@@ -29,6 +28,28 @@ if(!require(digest)) install.packages('digest',dependencies=TRUE, repos="http://
 library(RCurl)
 library(jsonlite)
 library(digest)
+
+## CLI inicio
+args = commandArgs(TRUE)
+
+parseArgs <- function(x) strsplit(sub("^--", "", x), "=")
+argsDF <- as.data.frame(do.call("rbind", parseArgs(args)))
+argsL <- as.list(as.character(argsDF$V2))
+names(argsL) <- argsDF$V1
+
+qtdRtwt <- -1
+pattern <- ""
+
+if( !is.null(argsL$rtwt)) {
+	qtdRtwt <- as.numeric(argsL$rtwt)
+}
+
+if( !is.null(argsL$word)) {
+	pattern <- argsL$word
+} else {
+	print("Passar pelo menos a palavra de pesquisada no socket --word=palavra")
+}
+## CLI fim    
 
 
 concatWord <- function(bagwDF, minOccur=0) {
@@ -107,25 +128,28 @@ permuteUser <- function(userArr, twoWay = TRUE, colName = c("from","to")) {
     return (lnkdUser)
 }
 
-URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
-rawJson <- getURLContent(URL)
+#URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
+#rawJson <- getURLContent(URL)
+rawJson = readLines(file('stdin', 'r'), n=1)    
 rd <- fromJSON(rawJson)
 bagTwt <- data.frame(rd$id, rd$text,rd$user, rd$retweet_count, rd$retweeted_status)
 colnames(bagTwt) <- c("id","text","user","retweet_count","retweeted_status")
 ##gera o md5 do texto do twiter
+
 bagTwt$chksum <- sapply(bagTwt$text, checksumText)
 bagTwt$text_small <- sapply(bagTwt$text, shirnkText)
 bagTwt[, 4] <- as.numeric(as.character( bagTwt[, 4] ))
-
 
 bagTwt <- bagTwt[which(is.na(bagTwt$retweeted_status)),]
 bagTwt <- aggregate(bagTwt$retweet_count, by=list(id=bagTwt$chksum, text=bagTwt$text_small), FUN=sum)
 colnames(bagTwt) <- c("id","text","qtd_rtw")
 
-
+## Padrao retweets > -1
+bagTwt <- bagTwt[which(bagTwt$qtd_rtw > qtdRtwt ),]
+    
 #head(bagTwt)
 
-pattern <- "musical,murica,trump"
+#pattern <- "murica"
 pattern <- tolower(pattern)
 pattVect <- unlist(strsplit(pattern, ","))
 pattVectLen <- length(pattVect)
