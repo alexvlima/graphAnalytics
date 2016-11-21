@@ -21,9 +21,9 @@
 #	]
 #}
 
-if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
-if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
-if(!require(digest)) install.packages('digest',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(RCurl,quietly = TRUE)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(jsonlite,quietly = TRUE)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
+if(!require(digest,quietly = TRUE)) install.packages('digest',dependencies=TRUE, repos="http://cran.rstudio.com/")
     
 suppressWarnings(suppressMessages(library(RCurl)))
 suppressWarnings(suppressMessages(library(jsonlite)))
@@ -179,7 +179,12 @@ for(i in 1:pattVectLen){
 }
 colnames(bgwDF) <- c("id","word","qtd")
 #bgwDF
-
+if(nrow(bgwDF) < 1) {
+	##opt <- options(show.error.messages=FALSE) 
+	##on.exit(options(opt)) 
+	stop('{"nodes":[], "edges":[]}')
+}
+	
 bgwDF <- aggregate( as.matrix(bgwDF[,3]), as.list(bgwDF[,1:2]), FUN = sum)
 bgwDF.concat <-concatWord(bgwDF,-1)
 len <- nrow(bgwDF.concat)
