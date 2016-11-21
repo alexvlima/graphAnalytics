@@ -25,9 +25,9 @@ if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE, repos="http://cr
 if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
 if(!require(digest)) install.packages('digest',dependencies=TRUE, repos="http://cran.rstudio.com/")
     
-library(RCurl)
-library(jsonlite)
-library(digest)
+suppressWarnings(suppressMessages(library(RCurl)))
+suppressWarnings(suppressMessages(library(jsonlite)))
+suppressWarnings(suppressMessages(library(digest)))
 
 ## CLI inicio
 args = commandArgs(TRUE)
@@ -159,9 +159,7 @@ pattern <- tolower(pattern)
 pattVect <- unlist(strsplit(pattern, ","))
 pattVectLen <- length(pattVect)
 
-
 bgwDF  <- data.frame(id= character(0), word= character(0), qtd = integer(0))
-
 
 for(i in 1:pattVectLen){
     
@@ -214,10 +212,38 @@ if(bagTwtLen > 0) {
 colnames(ukIdDF) <- c("id","label","size")
 #head(ukIdDF)
 
+## CLUSTER INICIO
+ukIdDFScale <- na.omit(ukIdDF$size)
+ukIdDFScale <- scale(ukIdDFScale)
+qtdCluster <- 0
+
+wss <- (nrow(ukIdDFScale)-1)*sum(apply(ukIdDFScale,2,var))
+
+if(!is.na(wss)){
+	qtdCluster <- as.numeric(wss[1])
+}
+if(qtdCluster > 10) {
+	qtdCluster <- 10
+}
+if(qtdCluster > 2) {
+	fit <- kmeans(ukIdDFScale, 5)
+	ukIdDFScale <- data.frame(ukIdDFScale, fit$cluster)
+	colnames(ukIdDFScale) <- c( "scale", "cluster" )  
+	ukIdDF <- cbind(ukIdDF,ukIdDFScale)
+}
+## CLUSTER FIM
+
 ## CRIA OS NODES DO ARQUIVO JSON graphi
 
-nodeDF <- ukIdDF
-colnames(nodeDF) <- c("id","label","size")
+if(qtdCluster > 2) {
+	nodeDF <- ukIdDF[,c("id","label","size","cluster")]
+	nodeDF <- within(nodeDF,  cluster <- paste("G",as.character(cluster), sep=""))
+} else {
+	nodeDF <- ukIdDF[,c("id","label","size")]
+	nodeDF <- within(nodeDF,  cluster <- paste("G1", sep=""))
+}
+
+colnames(nodeDF) <- c("id","label","size","group")
 ukUsr <- NULL
 
 cat('{', file=logFile, append=TRUE, sep = "\n")
@@ -225,7 +251,6 @@ cat('"nodes": [', file=logFile, append=TRUE, sep = "\n")
 
 ##output como JS
 ##cat('var nodes = [', file=logFile, append=TRUE, sep = "\n")
-
 
 nodeJson <- toJSON(nodeDF, pretty = FALSE)
 nodeJson <- gsub("^\\[", "", nodeJson)
