@@ -225,6 +225,11 @@ wss <- (nrow(ukIdDFScale)-1)*sum(apply(ukIdDFScale,2,var))
 if(!is.na(wss)){
 	qtdCluster <- as.numeric(wss[1])
 }
+##normalizacao clusters e escalas unicas
+if( qtdCluster > qtdUkIdDFScale) {
+	qtdCluster <- qtdUkIdDFScale
+}	
+
 if(qtdCluster > 10) {
 	qtdCluster <- 10
 	qtdUkIdDFScale <- 10
