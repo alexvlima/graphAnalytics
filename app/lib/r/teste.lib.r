@@ -39,10 +39,9 @@
 if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
 if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
 if(!require(randomNames)) install.packages('randomNames',dependencies=TRUE, repos="http://cran.rstudio.com/")
-#if(!require(mongolite)) install.packages('mongolite',dependencies=TRUE, repos="http://cran.rstudio.com/")
-    
-#http://ec2-52-67-202-64.sa-east-1.compute.amazonaws.com:1234/collection/Local/twitter/tweets/export/true
-#http://ec2-52-67-202-64.sa-east-1.compute.amazonaws.com:1234/collection/Local/twitter/users/export/true
+   
+#http://localhost:1234/collection/Local/twitter/tweets/export/true
+#http://localhost:1234/collection/Local/twitter/users/export/true
 
 library(RCurl)
 library(jsonlite)
@@ -122,9 +121,9 @@ permutations <- function(n){
 }
 
 ## retorn JSON de API adminMongo stdin comentado
-URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
-rawJson <- getURLContent(URL)
-#rawJson = readLines(file('stdin', 'r'), n=1)
+#URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
+#rawJson <- getURLContent(URL)
+rawJson = readLines(file('stdin', 'r'), n=1)
 rd <- fromJSON(rawJson)
 bagw <- data.frame(rd$text,rd$user)
 colnames(bagw) <- c("text","user")
