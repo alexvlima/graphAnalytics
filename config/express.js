@@ -38,6 +38,7 @@ module.exports = () => {
 	app.use('/js', express.static(require('path').normalize(__dirname + '/../public/js')))
 	app.use('/css', express.static(require('path').normalize(__dirname + '/../public/css')))
 	app.use('/fonts', express.static(require('path').normalize(__dirname + '/../public/fonts')))
+	app.use('/img', express.static(require('path').normalize(__dirname + '/../public/img')))
 
 	app.use(process.session)
 
