@@ -235,7 +235,7 @@ if(qtdCluster > 10) {
 	qtdUkIdDFScale <- 10
 }
 if(qtdCluster > 2) {
-	fit <- kmeans(ukIdDFScale, qtdUkIdDFScale)
+	fit <- kmeans(ukIdDFScale, qtdCluster)
 	ukIdDFScale <- data.frame(ukIdDFScale, fit$cluster)
 	colnames(ukIdDFScale) <- c( "scale", "cluster" )  
 	ukIdDF <- cbind(ukIdDF,ukIdDFScale)
