@@ -1,4 +1,4 @@
-## Filtra twittes por palavras. Caso exista mais de uma separar por virgula
+## Filtra tweets por palavras. Caso exista mais de uma separar por virgula
 ## Apresenta como size no node a quantidade de retweets
 ## Relacao dos edges e por tweet e word
 
@@ -56,17 +56,14 @@ if( !is.null(argsL$label)) {
 }
 ## CLI fim    
 
-
 concatWord <- function(bagwDF, minOccur=0) {
     tryCatch({
-        
         concatDF <- aggregate(bagwDF$id,bagwDF['word'],paste,collapse=',')
         colnames(concatDF) <- c("word", "id")
         #caso tenha mais de minOccur iteracoes da palavra
         concatDF <- concatDF[countCharOccurrences(',', concatDF$id) > minOccur, ]
         rownames(concatDF) <- NULL
         return(concatDF)
-        
     }, error=function(e){ 
         #print(i) 
         #print(e) 
@@ -230,6 +227,7 @@ if(!is.na(wss)){
 }
 if(qtdCluster > 10) {
 	qtdCluster <- 10
+	qtdUkIdDFScale <- 10
 }
 if(qtdCluster > 2) {
 	fit <- kmeans(ukIdDFScale, qtdUkIdDFScale)
