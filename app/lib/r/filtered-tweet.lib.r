@@ -2,6 +2,7 @@
 ## Apresenta como size no node a quantidade de retweets
 ## Relacao dos edges e por tweet e word
 
+## echo json_content | Rscript app/lib/filtered-tweet.lib.r --word=the --rtwt=200 --label
 # Formato do json a ser retornado: 
 #{
 #	'nodes': [
@@ -15,7 +16,7 @@
 #		{
 #			'from': 'id do tweet',
 #			'to': 'id do tweet',
-#     'label': 'word'
+#     			'label': 'word'
 #		}
 #	]
 #}
@@ -24,7 +25,6 @@ if(!require(RCurl)) install.packages('RCurl',dependencies=TRUE, repos="http://cr
 if(!require(jsonlite)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
 if(!require(digest)) install.packages('digest',dependencies=TRUE, repos="http://cran.rstudio.com/")
     
-
 library(RCurl)
 library(jsonlite)
 library(digest)
@@ -39,7 +39,8 @@ names(argsL) <- argsDF$V1
 
 qtdRtwt <- -1
 pattern <- ""
-
+showLabel <- FALSE
+	
 if( !is.null(argsL$rtwt)) {
 	qtdRtwt <- as.numeric(argsL$rtwt)
 }
@@ -48,6 +49,10 @@ if( !is.null(argsL$word)) {
 	pattern <- argsL$word
 } else {
 	print("Passar pelo menos a palavra de pesquisada no socket --word=palavra")
+}
+	
+if( !is.null(argsL$label)) {
+	showLabel <- TRUE
 }
 ## CLI fim    
 
@@ -249,10 +254,10 @@ for (i in 1:len){
     usrWord <- as.character(bgwDF.concat[i,1])
     usrArr <- strsplit(bgwDF.concat[i,2], ",")[[1]]
     usrPermute <- (permuteUser(usrArr, TRUE))
-   
-  
-    usrPermute$label <- usrWord 
-     
+
+    if(showLabel) {
+    	usrPermute$label <- usrWord 
+    }
     edgeJson <- toJSON(usrPermute, pretty = FALSE)
     edgeJson <- gsub("^\\[", "", edgeJson)
     edgeJson <- gsub("\\]$", "", edgeJson)
