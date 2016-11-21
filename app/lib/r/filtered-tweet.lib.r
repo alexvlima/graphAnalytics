@@ -220,6 +220,7 @@ colnames(ukIdDF) <- c("id","label","size")
 ## CLUSTER INICIO
 ukIdDFScale <- na.omit(ukIdDF$size)
 ukIdDFScale <- scale(ukIdDFScale)
+qtdUkIdDFScale <- nrow(unique(ukIdDFScale))
 qtdCluster <- 0
 
 wss <- (nrow(ukIdDFScale)-1)*sum(apply(ukIdDFScale,2,var))
@@ -231,7 +232,7 @@ if(qtdCluster > 10) {
 	qtdCluster <- 10
 }
 if(qtdCluster > 2) {
-	fit <- kmeans(ukIdDFScale, 5)
+	fit <- kmeans(ukIdDFScale, qtdUkIdDFScale)
 	ukIdDFScale <- data.frame(ukIdDFScale, fit$cluster)
 	colnames(ukIdDFScale) <- c( "scale", "cluster" )  
 	ukIdDF <- cbind(ukIdDF,ukIdDFScale)
