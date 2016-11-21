@@ -1,13 +1,13 @@
 const {exec} = require('child_process')
 
 let json = {
-	'nodes': [
+	'users': [
 		{
 			'a': 0,
 			'b': 1
 		}
 	],
-	'edges': [
+	'tweets': [
 		{
 			'a': 0,
 			'b': 1
@@ -15,7 +15,7 @@ let json = {
 	]
 }
 
-exec(`echo ${JSON.stringify(json)} | rscript app/lib/teste.lib.r`, (error, stdout, stderr) => {
+exec(`echo ${JSON.stringify(json)} | rscript app/lib/r/teste.lib.r`, (error, stdout, stderr) => {
 	if (error) return console.error(`exec error: ${error}`)
 	// if (stderr) return console.log(stderr)
 

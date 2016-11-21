@@ -1,6 +1,8 @@
 const {Twitter} = require('../lib/js/twitter.lib')
+const {parallel} = require('async')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
+const Tweet = mongoose.model('Tweet')
 
 module.exports = (server) => {
 	const io = require('socket.io')(server)
@@ -21,12 +23,7 @@ module.exports = (server) => {
 
 			socket.twitter.startStream(data.txt)
 
-			socket.interval = setInterval(() => {
-				// User.find({}, (result) => {
-				// 	console.log(result)
-				// })
-				console.log(0)
-			}, 3000)
+			socket.interval = setInterval(rLoop, 3000)
 		})
 
 		socket.on('stopStream', () => {
@@ -45,5 +42,26 @@ module.exports = (server) => {
 			// socket.emit('newTweet', t)
 		})
 
+	})
+}
+
+function rLoop() {
+	return parallel({
+		tweets: (callback) => {
+			Tweet.find({}, (err, result) => {
+				// processamento para o R
+				callback(null, result)
+			})
+		},
+		users: (callback) => {
+			User.find({}, (err, result) => {
+				// processamento para o R
+				callback(null, result)
+			})
+		}
+	}, (err, results) => {
+		// chama o R e emita o socket pro cliente
+		for (let k in results)
+			console.log(k)
 	})
 }
