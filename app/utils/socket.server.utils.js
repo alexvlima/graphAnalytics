@@ -1,5 +1,5 @@
 const {Twitter} = require('../lib/js/twitter.lib')
-const {exec, execSync} = require('child_process')
+const {exec} = require('child_process')
 const {words} = require('lodash')
 const {forever} = require('async')
 
@@ -50,7 +50,7 @@ module.exports = (server) => {
 						setTimeout(next, 5000, socket.stopped)
 					})
 				},
-				function (err) {
+				function () {
 					socket.stopped = false
 				}
 			)
@@ -65,14 +65,14 @@ module.exports = (server) => {
 		})
 
 		// Interfaces socket
-		socket.twitter.on('newUser', (u) => {
-			// socket.emit('newUser', u)
-		})
+		// socket.twitter.on('newUser', (u) => {
+		// 	// socket.emit('newUser', u)
+		// })
 
 		//envia um tweet novo		
-		socket.twitter.on('newTweet', (t) => {
-			// socket.emit('newTweet', t)
-		})
+		// socket.twitter.on('newTweet', (t) => {
+		// 	// socket.emit('newTweet', t)
+		// })
 
 	})
 }
