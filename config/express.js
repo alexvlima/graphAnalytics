@@ -45,7 +45,8 @@ module.exports = () => {
 	app.use(passport.initialize())
 	app.use(passport.session())
 
-	// require('../app/routes/user.server.route.js')(app)
+	require('../app/routes/user.server.route.js')(app)
+	require('../app/routes/tweet.server.route.js')(app)
 	require('../app/routes/index.server.route.js')(app)
 
 	return app

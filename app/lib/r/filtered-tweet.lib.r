@@ -24,7 +24,7 @@
 if(!require(RCurl,quietly = TRUE)) install.packages('RCurl',dependencies=TRUE, repos="http://cran.rstudio.com/")
 if(!require(jsonlite,quietly = TRUE)) install.packages('jsonlite',dependencies=TRUE, repos="http://cran.rstudio.com/")
 if(!require(digest,quietly = TRUE)) install.packages('digest',dependencies=TRUE, repos="http://cran.rstudio.com/")
-    
+
 suppressWarnings(suppressMessages(library(RCurl)))
 suppressWarnings(suppressMessages(library(jsonlite)))
 suppressWarnings(suppressMessages(library(digest)))
@@ -90,7 +90,7 @@ cleanText <- function(text, join = TRUE) {
 shirnkText <- function(text) {
     sntzText <- cleanText(text, FALSE)
     sntzText <- substr(sntzText, 1, 139)
-    sntzText <- tolower(sntzText)
+    # sntzText <- tolower(sntzText)
     return (sntzText)
 }
 
@@ -131,8 +131,9 @@ permuteUser <- function(userArr, twoWay = TRUE, colName = c("from","to")) {
 }
 
 #URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
-#rawJson <- getURLContent(URL)
-rawJson = readLines(file('stdin', 'r'), n=1)    
+URL <- "https://localhost/api/tweets"
+rawJson <- getURL(URL, ssl.verifyhost = 0L, ssl.verifypeer = 0L)
+# rawJson = readLines(file('stdin', 'r'), n=1)    
 rd <- fromJSON(rawJson)
 bagTwt <- data.frame(rd$id, rd$text,rd$user, rd$retweet_count, rd$retweeted_status)
 colnames(bagTwt) <- c("id","text","user","retweet_count","retweeted_status")
@@ -156,7 +157,7 @@ pattern <- tolower(pattern)
 pattVect <- unlist(strsplit(pattern, ","))
 pattVectLen <- length(pattVect)
 
-bgwDF  <- data.frame(id= character(0), word= character(0), qtd = integer(0))
+bgwDF <- data.frame(id= character(0), word= character(0), qtd = integer(0))
 
 for(i in 1:pattVectLen){
     

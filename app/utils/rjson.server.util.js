@@ -1,23 +1,11 @@
-const {exec} = require('child_process')
+const {execSync, spawnSync} = require('child_process')
+const fs = require('fs')
 
-let json = {
-	'users': [
-		{
-			'a': 0,
-			'b': 1
-		}
-	],
-	'tweets': [
-		{
-			'a': 0,
-			'b': 1
-		}
-	]
-}
+let net = execSync('rscript app/lib/r/filtered-tweet.lib.r --word=trump').toString()
 
-exec(`echo ${JSON.stringify(json)} | rscript app/lib/r/teste.lib.r`, (error, stdout, stderr) => {
-	if (error) return console.error(`exec error: ${error}`)
-	// if (stderr) return console.log(stderr)
+net = JSON.stringify(JSON.parse(net), null, 2)
 
-	console.log(JSON.stringify(JSON.parse(stdout), null, 2))
+fs.writeFile('/porra.json', net, function(err) {
+	if (err) throw err
+	
 })

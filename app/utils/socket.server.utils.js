@@ -1,8 +1,7 @@
 const {Twitter} = require('../lib/js/twitter.lib')
-const {parallel} = require('async')
-const mongoose = require('mongoose')
-const User = mongoose.model('User')
-const Tweet = mongoose.model('Tweet')
+const {exec, execSync} = require('child_process')
+const {words} = require('lodash')
+const {forever} = require('async')
 
 /* istanbul ignore next */
 module.exports = (server) => {
@@ -12,11 +11,10 @@ module.exports = (server) => {
 		console.log('Connected: ' + socket.id)
 		socket.twitter = new Twitter()
 
-
 		socket.on('disconnect', () => {
 			console.log('Disconnected: ' + socket.id)
 			socket.twitter.stopStream()
-			clearInterval(socket.interval)
+			socket.stopped = true
 		})
 
 		socket.on('startStream', (data) => {
@@ -24,13 +22,46 @@ module.exports = (server) => {
 
 			socket.twitter.startStream(data.txt)
 
-			socket.interval = setInterval(rLoop, 3000)
+
+			socket.interval = forever(
+				function (next) {
+					let ws = ''
+
+					for (let w of words(data.txt))
+						ws += w + ','
+
+					ws = ws.slice(0, -1)
+
+					console.log('start')
+
+					exec('rscript app/lib/r/filtered-tweet.lib.r --word=' + ws, { maxBuffer: 100000000 }, (error, stdout) => {
+						if (error) {
+							setTimeout(next, 5000)
+							return console.error(`exec error: ${error}`)
+						}
+
+						// console.log(`stdout: ${stdout}`)
+						// console.log(`stderr: ${stderr}`)
+
+						console.log('end')
+
+						socket.emit('graph', stdout.toString())
+
+						setTimeout(next, 5000, socket.stopped)
+					})
+				},
+				function (err) {
+					socket.stopped = false
+				}
+			)
+
+
 		})
 
 		socket.on('stopStream', () => {
 			console.log('Stream Stopped')
 			socket.twitter.stopStream()
-			clearInterval(socket.interval)
+			socket.stopped = true
 		})
 
 		// Interfaces socket
@@ -43,27 +74,5 @@ module.exports = (server) => {
 			// socket.emit('newTweet', t)
 		})
 
-	})
-}
-
-/* istanbul ignore next */
-function rLoop() {
-	return parallel({
-		tweets: (callback) => {
-			Tweet.find({}, (err, result) => {
-				// processamento para o R
-				callback(null, result)
-			})
-		},
-		users: (callback) => {
-			User.find({}, (err, result) => {
-				// processamento para o R
-				callback(null, result)
-			})
-		}
-	}, (err, results) => {
-		// chama o R e emita o socket pro cliente
-		for (let k in results)
-			console.log(k)
 	})
 }

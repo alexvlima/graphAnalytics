@@ -78,7 +78,7 @@
 		</a>
 		<ul>
 			<li>
-				<a class="btn-floating red tooltipped" data-position="left" data-delay="50" data-tooltip="Funcao 1">
+				<a id="exec" class="btn-floating red tooltipped" data-position="left" data-delay="50" data-tooltip="Funcao 1">
 					<i class="material-icons">insert_chart</i>
 				</a>
 			</li>
@@ -111,7 +111,35 @@
 		var container = document.getElementById('web')
 		var options = {
 			nodes: {
-				shape: 'box'
+				shape: 'dot',
+				scaling: {
+					min: 1,
+					max: 5,
+					label: {
+						min: 5,
+						max: 5,
+						drawThreshold: 5,
+						maxVisible: 30
+					}
+				},
+				font: {
+					size: 12,
+					face: 'Tahoma'
+				}
+			},
+			edges: {
+				width: 0.15,
+				color: {inherit: 'from'},
+				smooth: {
+					type: 'continuous'
+				}
+			},
+			physics: {
+				enabled: false
+			},
+			interaction: {
+				tooltipDelay: 200,
+				hideEdgesOnDrag: true
 			}
 		}
 		var network = new vis.Network(container, {nodes, edges}, options)
@@ -119,16 +147,24 @@
 		let socket = io.connect('https://localhost')
 		
 		socket.on('graph', (g) => {
-			console.log(g)
+			console.log('new graph')
+
+			g = JSON.parse(g)
+
+			nodes  = new vis.DataSet(g.nodes)
+			edges  = new vis.DataSet(g.edges)
+
+			network = new vis.Network(container, {nodes, edges}, options)
 		})
-
-
-
 
 		// Start e Stop stream
 		$('#cancel').click(() => {
 			$('#chip').html('none')
 			socket.emit('stopStream')
+		})
+		
+		$('#exec').click(() => {
+			socket.emit('exec')
 		})
 
 		$('#search').keypress((event) => {
