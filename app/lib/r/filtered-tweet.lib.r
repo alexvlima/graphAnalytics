@@ -113,7 +113,7 @@ cleanText <- function(text, join = TRUE) {
 shirnkText <- function(text) {
     sntzText <- cleanText(text, FALSE)
     sntzText <- substr(sntzText, 1, 139)
-    sntzText <- tolower(sntzText)
+    # sntzText <- tolower(sntzText)
     return (sntzText)
 }
 
@@ -156,8 +156,9 @@ permuteUser <- function(userArr, twoWay = TRUE, colName = c("from","to")) {
     return (lnkdUser)
 }
 
-URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
-rawJson <- getURLContent(URL)
+# URL <- "localhost:1234/collection/Local/twitter/tweets/export/true"
+URL <- "https://localhost/api/tweets"
+rawJson <- getURL(URL, ssl.verifyhost = 0L, ssl.verifypeer = 0L)
 #rawJson = readLines(file('stdin', 'r'), n=1)    
 rd <- fromJSON(rawJson)
 bagTwt <- data.frame(rd$id, rd$text,rd$user, rd$retweet_count, rd$retweeted_status)

@@ -36,7 +36,7 @@ module.exports = (server) => {
 
 					exec('rscript app/lib/r/filtered-tweet.lib.r --word=' + ws, { maxBuffer: 100000000 }, (error, stdout) => {
 						if (error) {
-							setTimeout(next, 5000)
+							setTimeout(next, 5000, true)
 							return console.error(`exec error: ${error}`)
 						}
 
